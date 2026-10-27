@@ -16,17 +16,19 @@ Vercel project `3dsmood-license-admin` dùng root directory `apps/license-admin`
 
 Xem [hướng dẫn triển khai và cấu hình](apps/license-admin/README.md).
 
-## Quét Drive tự động
+## Cập nhật catalog từ Drive
 
 - Thêm GitHub Actions secret `GOOGLE_DRIVE_API_KEY` vào repo này; giới hạn API key cho Google Drive API.
-- Workflow `Weekly Drive catalog sync` quét mỗi Chủ Nhật lúc 18:00 UTC (Thứ Hai 01:00 giờ Bangkok). Có thể chạy thủ công từ trang admin hoặc tab Actions.
+- Workflow `Drive catalog sync` chỉ chạy khi admin bấm **Làm mới catalog từ Drive** trong trang admin hoặc chạy thủ công từ tab Actions; không có lịch quét hàng tuần.
 - Workflow cập nhật `library/public/catalog.json` và `library/public/previews/` trong cùng repo bằng token GitHub Actions tích hợp; không cần token ghi sang repo khác.
 - Mặc định workflow không xuất bản nếu số model thấp hơn 360. Chỉ thay `CATALOG_MINIMUM_MODEL_COUNT` sau khi kiểm tra thay đổi inventory có chủ ý.
 - Có thể đổi Drive root bằng repo variable `DRIVE_FOLDER_ID`.
 
 Trong Drive, mỗi model cần một file model/archive được hỗ trợ và một ảnh PNG/JPEG/WebP cùng tên gốc trong cùng thư mục, ví dụ `chair.zip` và `chair.jpg`. Tên thư mục con trở thành danh mục. Giữ quyền Editor chỉ cho admin. Model cần được chia sẻ đủ quyền để plugin khách tải trực tiếp.
 
-## Cập nhật catalog thủ công
+Sau khi tải model lên Drive, admin bấm **Làm mới catalog từ Drive**. Nút **Kiểm tra trạng thái** chỉ tải lại tiến độ quét; khi workflow báo hoàn tất, GitHub Pages đã xuất bản catalog mới.
+
+## Chỉnh catalog thủ công
 
 Thông thường hãy dùng nút quét trong admin hoặc chạy workflow từ Actions. Nếu sửa catalog thủ công, cập nhật `library/public/catalog.json` và preview được tham chiếu, rồi chạy:
 

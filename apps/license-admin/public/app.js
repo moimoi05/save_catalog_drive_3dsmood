@@ -86,13 +86,13 @@ function renderRuns(runs) {
   }
 }
 
-async function refreshRuns() {
+async function refreshRuns({ successMessage = 'Đã cập nhật trạng thái.' } = {}) {
   const button = $('#refresh-status');
   button.disabled = true;
   try {
     const result = await api('/api/catalog-status');
     renderRuns(result.runs);
-    showMessage($('#scan-message'), 'Đã cập nhật trạng thái.', 'success');
+    showMessage($('#scan-message'), successMessage, 'success');
   } catch (error) {
     showMessage($('#scan-message'), error.message, 'error');
   } finally {
@@ -173,9 +173,8 @@ $('#scan-button').addEventListener('click', async event => {
   button.disabled = true;
   showMessage($('#scan-message'), 'Đang gửi yêu cầu đến GitHub Actions…');
   try {
-    const result = await api('/api/catalog-scan', { method: 'POST', body: {}, csrf: true });
-    showMessage($('#scan-message'), result.message, 'success');
-    await refreshRuns();
+    await api('/api/catalog-scan', { method: 'POST', body: {}, csrf: true });
+    await refreshRuns({ successMessage: 'Đã gửi yêu cầu quét. Dùng “Kiểm tra trạng thái” để xem khi catalog được cập nhật.' });
   } catch (error) {
     showMessage($('#scan-message'), error.message, 'error');
   } finally {
@@ -183,7 +182,7 @@ $('#scan-button').addEventListener('click', async event => {
   }
 });
 
-$('#refresh-status').addEventListener('click', refreshRuns);
+$('#refresh-status').addEventListener('click', () => refreshRuns());
 
 async function initialize() {
   try {

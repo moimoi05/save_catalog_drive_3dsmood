@@ -1,6 +1,6 @@
 # Nhập catalog từ thư mục Google Drive công khai
 
-Công cụ dành cho chủ sở hữu, chạy bằng Node.js 20 trở lên; **không đóng gói cho khách**. Nó đọc Drive và cập nhật catalog cùng preview trong repo này. GitHub Actions gọi công cụ mỗi tuần hoặc theo nút quét trong trang admin; workflow Pages riêng sẽ kiểm tra rồi publish.
+Công cụ dành cho chủ sở hữu, chạy bằng Node.js 20 trở lên; **không đóng gói cho khách**. Nó đọc Drive và cập nhật catalog cùng preview trong repo này. GitHub Actions chỉ chạy theo yêu cầu từ nút quét trong trang admin hoặc thao tác thủ công từ tab Actions; workflow Pages riêng kiểm tra rồi publish.
 
 Trước khi chạy, kiểm tra quyền Viewer “Anyone with the link” cho từng file, tự xác minh số cặp model/ảnh trong toàn bộ cây Drive và sao lưu catalog hiện tại. Thư mục cache phải nằm ngoài `library/public`, ở ổ có đủ chỗ cho ảnh và state. Model được stream qua SHA-256, không lưu bản sao archive; vẫn tiêu thụ toàn bộ băng thông và quota khi chạy lần đầu (có thể nhiều GB). Không chạy nếu Google đang trả hạn mức hoặc chặn automated queries.
 
