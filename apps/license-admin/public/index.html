@@ -68,16 +68,16 @@
               <span class="icon-badge blue" aria-hidden="true">↻</span>
               <div><div class="eyebrow">GOOGLE DRIVE → GITHUB PAGES</div><h2>Cập nhật catalog</h2></div>
             </div>
-            <p class="muted">Quét toàn bộ thư mục Drive và các thư mục con. File model cần ảnh cùng tên gốc để được ghép preview.</p>
+            <p class="muted">Sau khi admin tải model lên Drive, bấm nút xanh để quét Drive và làm mới catalog. File model cần ảnh cùng tên gốc để được ghép preview.</p>
             <div class="scan-callout"><span class="scan-pulse" aria-hidden="true"></span><span>Catalog chỉ cập nhật khi danh sách quét vượt qua kiểm tra an toàn. Nếu số model giảm bất thường, workflow sẽ dừng.</span></div>
             <div class="scan-actions">
-              <button id="scan-button" class="button primary" type="button">Quét Drive và cập nhật</button>
-              <button id="refresh-status" class="button secondary" type="button">Làm mới trạng thái</button>
+              <button id="scan-button" class="button primary" type="button">Làm mới catalog từ Drive</button>
+              <button id="refresh-status" class="button secondary" type="button">Kiểm tra trạng thái</button>
             </div>
             <p id="scan-message" class="message" role="status" aria-live="polite"></p>
             <div class="runs-heading"><h3>Lịch sử quét gần đây</h3><span id="runs-count" class="count-pill">—</span></div>
             <div id="runs-list" class="runs-list"><p class="empty-state">Đang tải trạng thái…</p></div>
-            <p class="note">Lịch tự động: mỗi tuần. Model mới hợp lệ được đồng bộ sang repo catalog; GitHub Pages tự publish sau đó.</p>
+            <p class="note">Quét theo yêu cầu của admin, không chạy theo lịch. Khi trạng thái báo “Hoàn tất”, catalog mới đã được publish; khách chỉ cần bấm Refresh trong plugin, không cần cài lại.</p>
           </section>
         </div>
         <footer class="footer">3DSMOOD · Công cụ riêng cho quản trị viên</footer>

@@ -16,7 +16,7 @@ Set these **Production** environment variables before deploying:
 | `LICENSE_PUBLIC_KEY_B64` | Base64 encoding of the matching `library-public.xml`; the server checks that the pair matches. |
 | `GITHUB_ACTIONS_TOKEN` | Fine-grained token limited to `moimoi05/save_catalog_drive_3dsmood`, with Actions: write. Used to dispatch scans and read run status. |
 | `DRIVE_WORKFLOW_REPOSITORY` | `moimoi05/save_catalog_drive_3dsmood` (optional; this is the default). |
-| `DRIVE_WORKFLOW_ID` | `weekly-drive-catalog.yml` (optional; this is the default). |
+| `DRIVE_WORKFLOW_ID` | `drive-catalog-sync.yml` (optional; this is the default). |
 
 Generate a session secret locally with Node.js:
 
@@ -43,7 +43,7 @@ Add this **Actions secret** to `moimoi05/save_catalog_drive_3dsmood`:
 | --- | --- |
 | `GOOGLE_DRIVE_API_KEY` | Google API key restricted to the Drive API, used to list Drive metadata. |
 
-The scanner runs every Sunday at 18:00 UTC (Monday 01:00 in Bangkok) and can also be dispatched manually from this admin page or the GitHub Actions tab. It scans the configured Drive root and its subfolders, validates the result, then commits the catalog and previews in this repository using the workflow's `GITHUB_TOKEN`. No cross-repository write token is needed.
+The scanner runs only when the admin clicks **Làm mới catalog từ Drive** on this page or starts it from the GitHub Actions tab. After an upload, the admin button scans the configured Drive root and subfolders, validates the result, commits the catalog and previews in this repository using the workflow's `GITHUB_TOKEN`, then publishes GitHub Pages. No weekly schedule or cross-repository write token is used. **Kiểm tra trạng thái** only refreshes scan progress.
 
 The live Drive root currently has 360 model pairs in 126 folders. The workflow keeps a minimum of 360 so an incomplete listing cannot replace the catalog. If the repository variable `CATALOG_MINIMUM_MODEL_COUNT` is set below 360, raise it or remove it to use the default.
 

@@ -1,15 +1,13 @@
-name: Weekly Drive catalog sync
+name: Drive catalog sync
 
 on:
-  schedule:
-    - cron: '0 18 * * 0'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: weekly-drive-catalog-sync
+  group: drive-catalog-sync
   cancel-in-progress: false
 
 jobs:
