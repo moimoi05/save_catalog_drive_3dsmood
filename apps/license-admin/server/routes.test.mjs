@@ -3,8 +3,6 @@ import assert from 'node:assert/strict';
 import { createPublicKey, generateKeyPairSync, verify } from 'node:crypto';
 import sessionRoute from '../api/session.js';
 import issueLicenseRoute from '../api/issue-license.js';
-import catalogScanRoute from '../api/catalog-scan.js';
-import catalogStatusRoute from '../api/catalog-status.js';
 import { createSession, SESSION_COOKIE } from './security.mjs';
 
 const sessionSecret = 'api-route-tests-session-secret-at-least-thirty-two-bytes';
@@ -136,53 +134,4 @@ test('license signing fails closed when the server key is missing or invalid', a
   response = await issueLicenseRoute.fetch(mismatch.request);
   assert.equal(response.status, 503);
   assert.doesNotMatch(await response.text(), /PRIVATE KEY/);
-});
-
-test('scan trigger explains that the GitHub connection must be configured', async () => {
-  setAdminEnvironment();
-  const previousToken = process.env.GITHUB_ACTIONS_TOKEN;
-  delete process.env.GITHUB_ACTIONS_TOKEN;
-  try {
-    const scan = authRequest('https://admin.example.test/api/catalog-scan', { method: 'POST', body: {} });
-    const response = await catalogScanRoute.fetch(scan.request);
-    assert.equal(response.status, 503);
-    assert.deepEqual(await response.json(), { error: 'Trang admin chưa được kết nối với GitHub để quét Drive. Cần hoàn tất thiết lập một lần.' });
-  } finally {
-    if (previousToken === undefined) delete process.env.GITHUB_ACTIONS_TOKEN;
-    else process.env.GITHUB_ACTIONS_TOKEN = previousToken;
-  }
-});
-
-test('scan trigger and status require an admin session and never accept a target repo from the browser', async () => {
-  setAdminEnvironment();
-  process.env.GITHUB_ACTIONS_TOKEN = 'ghs_test_token_value_for_action_api';
-  process.env.DRIVE_WORKFLOW_REPOSITORY = 'owner/private-repo';
-  process.env.DRIVE_WORKFLOW_ID = 'drive-catalog-sync.yml';
-  const originalFetch = globalThis.fetch;
-  const requests = [];
-  globalThis.fetch = async (url, init) => {
-    requests.push({ url: String(url), init });
-    if (init?.method === 'POST') return new Response(null, { status: 204 });
-    return Response.json({ workflow_runs: [{ id: 23, status: 'completed', conclusion: 'success', html_url: 'https://github.com/owner/private-repo/actions/runs/23' }] });
-  };
-  try {
-    const unauthorized = await catalogScanRoute.fetch(new Request('https://admin.example.test/api/catalog-scan', { method: 'POST' }));
-    assert.equal(unauthorized.status, 401);
-    assert.equal(requests.length, 0);
-
-    const scan = authRequest('https://admin.example.test/api/catalog-scan', { method: 'POST', body: {} });
-    const scanResponse = await catalogScanRoute.fetch(scan.request);
-    assert.equal(scanResponse.status, 202);
-    assert.equal(requests.length, 1);
-    assert.match(requests[0].url, /owner\/private-repo\/actions\/workflows\/drive-catalog-sync\.yml\/dispatches/);
-    assert.deepEqual(JSON.parse(requests[0].init.body), { ref: 'main' });
-
-    const status = authRequest('https://admin.example.test/api/catalog-status');
-    const statusResponse = await catalogStatusRoute.fetch(status.request);
-    assert.equal(statusResponse.status, 200);
-    assert.equal((await statusResponse.json()).runs[0].id, 23);
-    assert.equal(requests.length, 2);
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
 });

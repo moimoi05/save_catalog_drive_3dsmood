@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="theme-color" content="#101713" />
-    <title>3DSMOOD · Quản trị thư viện</title>
+    <title>3DSMOOD · Quản trị license</title>
     <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="/app.js"></script>
   </head>
@@ -14,7 +14,7 @@
       <header class="topbar">
         <a class="brand" href="/" aria-label="3DSMOOD quản trị">
           <span class="brand-mark" aria-hidden="true">3D</span>
-          <span><strong>3DSMOOD</strong><small>LIBRARY CONTROL</small></span>
+          <span><strong>3DSMOOD</strong><small>LICENSE CONTROL</small></span>
         </a>
         <span id="connection-status" class="connection"><span class="dot"></span>Đang kiểm tra phiên</span>
       </header>
@@ -35,8 +35,8 @@
         <div class="welcome-row">
           <div>
             <div class="eyebrow">BẢNG ĐIỀU KHIỂN</div>
-            <h1>Quản lý thư viện</h1>
-            <p class="muted">Cấp license ngoại tuyến và đồng bộ model từ Drive lên catalog.</p>
+            <h1>Quản lý license</h1>
+            <p class="muted">Tạo license để khách kích hoạt plugin ngoại tuyến.</p>
           </div>
           <button id="logout-button" class="button quiet" type="button">Đăng xuất</button>
         </div>
@@ -61,23 +61,6 @@
               <textarea id="license-token" readonly spellcheck="false" aria-label="License token"></textarea>
               <p class="note">Gửi token này cho khách qua kênh riêng. Hãy giữ bản ghi mã tham chiếu trong sổ quản lý của bạn.</p>
             </div>
-          </section>
-
-          <section class="card catalog-card">
-            <div class="section-heading">
-              <span class="icon-badge blue" aria-hidden="true">↻</span>
-              <div><div class="eyebrow">GOOGLE DRIVE → GITHUB PAGES</div><h2>Cập nhật catalog</h2></div>
-            </div>
-            <p class="muted">Sau khi admin tải model lên Drive, bấm nút xanh để quét Drive và làm mới catalog. File model cần ảnh cùng tên gốc để được ghép preview.</p>
-            <div class="scan-callout"><span class="scan-pulse" aria-hidden="true"></span><span>Catalog chỉ cập nhật khi danh sách quét vượt qua kiểm tra an toàn. Nếu số model giảm bất thường, workflow sẽ dừng.</span></div>
-            <div class="scan-actions">
-              <button id="scan-button" class="button primary" type="button">Làm mới catalog từ Drive</button>
-              <button id="refresh-status" class="button secondary" type="button">Kiểm tra trạng thái</button>
-            </div>
-            <p id="scan-message" class="message" role="status" aria-live="polite"></p>
-            <div class="runs-heading"><h3>Lịch sử quét gần đây</h3><span id="runs-count" class="count-pill">—</span></div>
-            <div id="runs-list" class="runs-list"><p class="empty-state">Đang tải trạng thái…</p></div>
-            <p class="note">Quét theo yêu cầu của admin, không chạy theo lịch. Khi trạng thái báo “Hoàn tất”, catalog mới đã được publish; khách chỉ cần bấm Refresh trong plugin, không cần cài lại.</p>
           </section>
         </div>
         <footer class="footer">3DSMOOD · Công cụ riêng cho quản trị viên</footer>
