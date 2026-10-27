@@ -1,0 +1,78 @@
+name: Weekly Drive catalog sync
+
+on:
+  schedule:
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-drive-catalog-sync
+  cancel-in-progress: false
+
+jobs:
+  scan-and-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      DRIVE_FOLDER_ID: ${{ vars.DRIVE_FOLDER_ID || '1qQgoy1yLQuaO9S-yT_ZT7nai6EAA4OwA' }}
+      MINIMUM_MODEL_COUNT: ${{ vars.CATALOG_MINIMUM_MODEL_COUNT || '360' }}
+    steps:
+      - name: Check out catalog and scanner
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+
+      - name: Run scanner tests
+        run: node --test library/catalog.test.mjs tools/catalog-import/*.test.mjs
+
+      - name: Restore incremental Drive cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ runner.temp }}/catalog-import-cache
+          key: ${{ runner.os }}-drive-import-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.os }}-drive-import-
+
+      - name: Scan Drive and update catalog
+        env:
+          GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
+        run: |
+          if [ -z "$GOOGLE_DRIVE_API_KEY" ]; then
+            echo "::error::Add GOOGLE_DRIVE_API_KEY to repository Actions secrets."
+            exit 1
+          fi
+          if ! [[ "$MINIMUM_MODEL_COUNT" =~ ^[1-9][0-9]{0,4}$ ]]; then
+            echo "::error::CATALOG_MINIMUM_MODEL_COUNT must be between 1 and 99999."
+            exit 1
+          fi
+          node tools/catalog-import/import.mjs \
+            --folder "$DRIVE_FOLDER_ID" \
+            --cache "$RUNNER_TEMP/catalog-import-cache" \
+            --out "$GITHUB_WORKSPACE/library/public/catalog.json" \
+            --minimum-models "$MINIMUM_MODEL_COUNT" \
+            --list-source drive-api
+          node library/validate-catalog.mjs "$GITHUB_WORKSPACE/library/public/catalog.json"
+
+      - name: Save incremental Drive cache
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ runner.temp }}/catalog-import-cache
+          key: ${{ runner.os }}-drive-import-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Publish changed catalog files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add library/public/catalog.json library/public/previews
+          if git diff --cached --quiet; then
+            echo "Catalog already matches the Drive inventory."
+            exit 0
+          fi
+          git commit -m "chore: sync Drive model catalog"
+          git push origin HEAD:main
