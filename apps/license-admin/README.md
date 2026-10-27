@@ -13,14 +13,7 @@ Dự án `3dsmood-license-admin` dùng thư mục gốc `apps/license-admin` và
 | `LICENSE_PRIVATE_KEY_B64` | Khóa ký riêng dạng PEM mã hóa Base64, chỉ lưu trong môi trường server Vercel. |
 | `LICENSE_PUBLIC_KEY_B64` | Khóa công khai XML tương ứng, mã hóa Base64; server kiểm tra khớp cặp khóa. |
 
-Không đưa khóa riêng vào repo, plugin, bộ cài, chat hoặc log. Cần giữ nguyên cặp khóa hiện tại để plugin xác minh được license. Tạo session secret bằng `node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"`. Nếu cần chuẩn bị khóa cho Vercel, chép từng giá trị vào clipboard, dán vào biến tương ứng rồi xóa clipboard:
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes('C:\LibraryOwnerKeys\library-private.pem')) | Set-Clipboard
-Set-Clipboard -Value ''
-[Convert]::ToBase64String([IO.File]::ReadAllBytes('C:\LibraryOwnerKeys\library-public.xml')) | Set-Clipboard
-Set-Clipboard -Value ''
-```
+Không đưa khóa riêng vào repo, plugin, bộ cài, máy khách, chat hoặc log. Giữ khóa riêng hiện tại chỉ trong môi trường server Vercel và giữ nguyên cặp khóa để plugin xác minh được license. Không cần sao chép hay tải khóa riêng về máy khi vận hành. Tạo session secret bằng `node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"`.
 
 Cấu hình quy tắc Vercel Firewall `admin-session-login` giới hạn 10 yêu cầu/phút/mỗi địa chỉ IP. Khi dịch vụ giới hạn không hoạt động, đăng nhập Production trả lỗi 503 để bảo vệ tài khoản.
 
